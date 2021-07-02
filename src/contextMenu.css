@@ -1,0 +1,42 @@
+.wes-context-menu-panel {
+	display: block;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	color: #000;
+	background: #f5f5f5;
+	border: 1px solid #000;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.wes-context-menu-item {
+	cursor: default;
+}
+
+.wes-context-menu-item:hover {
+	background: #f5f5f5;
+}
+
+
+.wes-context-menu-item__disabled {
+	color: #878b90;
+}
+
+.wes-context-menu-item__disabled:hover {
+
+}
+
+.wes-context-menu-separator {
+	height: 0;
+	border-top: 1px solid #878b90;
+}
+
+.wes-context-menu-subtext {
+	color: #878b90;
+	float: right;
+}

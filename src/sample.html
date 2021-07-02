@@ -1,0 +1,51 @@
+<html>
+	<head>
+		<title>ContextMenu</title>
+		<link rel="stylesheet" href="./contextMenu.css" type="text/css" />
+		<style>
+			body {
+				margin: 0;
+				height: 100%;
+			}
+			.container {
+				height: 100%;
+				display: flex;
+			}
+			.left-container {
+				background-color: #808080;
+			}
+			.right-container {
+				background-color: #909090;
+			}
+			.left-container,
+			.right-container {
+				width: 50%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="left-container"></div>
+			<div class="right-container"></div>
+		</div>
+
+		<script type="module">
+			import MenuHandler from './MenuHandler.js';
+
+			MenuHandler.register(document.querySelector('.right-container'), {
+				menuItems: [
+					{ text: 'item-1', subtext: 'sub-text-1', disabled: true },
+					{
+						text: 'item-2',
+						subtext: 'sub-text-2',
+						subMenu: {
+							menuItems: [{ text: 'item-1', subtext: 'sub-text-1', disabled: true }],
+						},
+					},
+				],
+			});
+
+			window.MenuHandler = MenuHandler;
+		</script>
+	</body>
+</html>
