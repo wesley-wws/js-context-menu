@@ -2,19 +2,18 @@ import MenuPanel from './MenuPanel.js';
 import constants from './Constants.js';
 
 // this class is used for control MenuPanul behavior, like when to show or when to hide.
-export default {
+const contextMenuManager = {
 	element_menu_map: new WeakMap(),
     separator:constants.separator,
 
-
-	registerContextMenu(targetElement, menu) {
+	register(targetElement, menu) {
 		const menuPanel = new MenuPanel(menu);
 		this.element_menu_map.set(targetElement, menuPanel);
 
 		window.addEventListener('contextmenu', this._oncontextmenu.bind(this));
 		window.addEventListener('click', this._onclick.bind(this));
 	},
-	unregisterContextMenu(targetElement) {
+	unregister(targetElement) {
 		window.removeEventListener('contextmenu', this._oncontextmenu.bind(this));
 		window.removeEventListener('click', this._onclick.bind(this));
 		this.element_menu_map.delete(targetElement);
@@ -39,3 +38,5 @@ export default {
 		});
 	},
 };
+
+export default contextMenuManager;

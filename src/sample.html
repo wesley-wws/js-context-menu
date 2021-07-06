@@ -38,9 +38,9 @@
 		</div>
 
 		<script type="module">
-			import MenuManager from './MenuManager.js';
+			import ContextMenuManager from './ContextMenuManager.js';
 
-			MenuManager.registerContextMenu(document.querySelector('.right-container'), {
+			ContextMenuManager.register(document.querySelector('.right-container'), {
 				menuItems: [
 					{ text: 'right-1', subText: 'sub-text-1', disabled: true },
 					{
@@ -60,7 +60,7 @@
 				],
 			});
 
-			MenuManager.registerContextMenu(document.querySelector('.left-container'), {
+			ContextMenuManager.register(document.querySelector('.left-container'), {
 				menuItems: [
 					{ text: 'left-1', subText: 'sub-text-1', disabled: true },
 					MenuManager.separator,
@@ -81,7 +81,7 @@
 				],
 			});
 
-			MenuManager.registerContextMenu(document.querySelector('.right-container-top'), {
+			ContextMenuManager.register(document.querySelector('.right-container-top'), {
 				menuItems: [
 					{ text: 'right-top-1', subText: 'sub-text-1', disabled: true },
 					{
@@ -101,7 +101,7 @@
 				],
 			});
 
-			window.MenuManager = MenuManager;
+			window.ContextMenuManager = ContextMenuManager;
 		</script>
 	</body>
 </html>
