@@ -1,7 +1,6 @@
 import constants from './Constants.js';
 
 export default class MenuPanel {
-
 	constructor(settings) {
 		const defaultSettings = {
 			menuItems: [],
@@ -13,10 +12,12 @@ export default class MenuPanel {
 		this._menuItems = settings.menuItems;
 		this._menuElement = null;
 
+		//todo : move out from this
 		this.targetElement_oncontextmenu = (e) => {
 			e.preventDefault();
 			this.render(e.clientX, e.clientY, e.target);
 		};
+		//todo : move out from this
 		this.targetElement_onclick = (e) => {
 			this.hide();
 		};
@@ -39,11 +40,12 @@ export default class MenuPanel {
 			return;
 		}
 
-		this._menuElement.remove();
 		this._menuElement.querySelectorAll('.wes-context-menu-item__has-submenu').forEach((e) => {
 			const subMenu = this._menuItemElement_subMenu_mapp.get(e);
 			subMenu.hide();
 		});
+		
+		this._menuElement.remove();
 		this._menuElement = null;
 	}
 
@@ -102,7 +104,7 @@ export default class MenuPanel {
 		itemElement.appendChild(textElement);
 
 		// if (menuItem.textColor && /^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.test(menuItem.textColor)) {
-		// 	textElement.style.cssText = `color: ${menuItem.textColor}`;
+		// 	textElement.style.cssText = 'color:'+menuItem.textColor;
 		// }
 
 		if (menuItem.subText) {
