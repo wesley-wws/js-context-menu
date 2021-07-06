@@ -1,4 +1,4 @@
-import MenuPanel from './menuPanel.js';
+import MenuPanel from './MenuPanel.js';
 import constants from './Constants.js';
 
 // this class is used for control MenuPanul behavior, like when to show or when to hide.
