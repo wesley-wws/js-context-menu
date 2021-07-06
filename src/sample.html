@@ -21,31 +21,87 @@
 			.right-container {
 				width: 50%;
 			}
+			.right-container-top{
+				height: 500px;
+				background-color: #707070;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
 			<div class="left-container"></div>
-			<div class="right-container"></div>
+			<div class="right-container">
+				<div class="right-container-top">
+					<input type="text"/>
+				</div>
+			</div>
 		</div>
 
 		<script type="module">
-			import MenuHandler from './MenuHandler.js';
+			import MenuManager from './MenuManager.js';
 
-			MenuHandler.register(document.querySelector('.right-container'), {
+			MenuManager.registerContextMenu(document.querySelector('.right-container'), {
 				menuItems: [
-					{ text: 'item-1', subtext: 'sub-text-1', disabled: true },
+					{ text: 'right-1', subText: 'sub-text-1', disabled: true },
 					{
 						text: 'item-2',
 						subtext: 'sub-text-2',
 						subMenu: {
-							menuItems: [{ text: 'item-1', subtext: 'sub-text-1', disabled: true }],
+							menuItems: [{ text: 'item-1', subText: 'sub-text-1', disabled: true }],
+						},
+					},
+					{
+						text: 'item-3',
+						subtext: 'sub-text-3',
+						onClick: (context) => {
+							console.log(context);
 						},
 					},
 				],
 			});
 
-			window.MenuHandler = MenuHandler;
+			MenuManager.registerContextMenu(document.querySelector('.left-container'), {
+				menuItems: [
+					{ text: 'left-1', subText: 'sub-text-1', disabled: true },
+					MenuManager.separator,
+					{
+						text: 'item-2',
+						subtext: 'sub-text-2',
+						subMenu: {
+							menuItems: [{ text: 'item-1', subText: 'sub-text-1', disabled: true }],
+						},
+					},
+					{
+						text: 'item-3',
+						subtext: 'sub-text-3',
+						onClick: (context) => {
+							console.log(context);
+						},
+					},
+				],
+			});
+
+			MenuManager.registerContextMenu(document.querySelector('.right-container-top'), {
+				menuItems: [
+					{ text: 'right-top-1', subText: 'sub-text-1', disabled: true },
+					{
+						text: 'item-2',
+						subtext: 'sub-text-2',
+						subMenu: {
+							menuItems: [{ text: 'item-1', subText: 'sub-text-1', disabled: true }],
+						},
+					},
+					{
+						text: 'item-3',
+						subtext: 'sub-text-3',
+						onClick: (context) => {
+							console.log(context);
+						},
+					},
+				],
+			});
+
+			window.MenuManager = MenuManager;
 		</script>
 	</body>
 </html>

@@ -8,45 +8,83 @@ export default class MenuPanel {
 
 		Object.assign(defaultSettings, settings);
 
-		this._menuItemElement_subMenu_mapp = new WeakMap();
+		this._menuItemElement_menuItem_mapp = new WeakMap();
+		this._menuItemElement_subMenuPanel_mapp = new WeakMap();
 		this._menuItems = settings.menuItems;
-		this._menuElement = null;
 
-		//todo : move out from this
-		this.targetElement_oncontextmenu = (e) => {
-			e.preventDefault();
-			this.render(e.clientX, e.clientY, e.target);
+		this._menuItemClick = (e) => {
+			let itemElement = e.currentTarget;
+			const menuItem = this._menuItemElement_menuItem_mapp.get(itemElement);
+			if (menuItem) {
+				if (menuItem.disabled) {
+					e.stopPropagation();
+					return;
+				}
+
+				if (menuItem.onClick && typeof menuItem.onClick === 'function') {
+					const context = {
+						data: menuItem,
+						key: menuItem.key,
+						value: menuItem.value,
+					};
+
+					const isPropagation = menuItem.onClick(context);
+					if (!isPropagation) {
+						e.stopPropagation();
+					}
+				}
+			}
 		};
-		//todo : move out from this
-		this.targetElement_onclick = (e) => {
-			this.hide();
+
+		this._menuItemMouseEnter = (e) => {
+			// hide all sub menu and show correct sub menu
+			this._hideSubMenus();
+			let itemElement = e.target;
+			const subMenu = this._menuItemElement_subMenuPanel_mapp.get(itemElement);
+			if (subMenu) {
+				const x = this.menuElement.offsetLeft + this.menuElement.offsetWidth;
+				const y = this.menuElement.offsetTop + itemElement.offsetTop;
+
+				subMenu.render(x, y, itemElement);
+			}
 		};
 	}
 
-	render(x, y, container) {
-		this.hide();
-		if (this._menuElement === null) {
+	get menuElement() {
+		if (!this._menuElement) {
 			this._menuElement = this._createMenuElement({
 				menuItems: this._menuItems,
 			});
 		}
-		this._menuElement.style.left = `${x}px`;
-		this._menuElement.style.top = `${y}px`;
-		container.appendChild(this._menuElement);
+		return this._menuElement;
+	}
+
+	render(x, y, container) {
+		this.hide();
+
+		this.menuElement.style.left = `${x}px`;
+		this.menuElement.style.top = `${y}px`;
+		container.appendChild(this.menuElement);
 	}
 
 	hide() {
-		if (this._menuElement === null) {
-			return;
-		}
+		this._hideSubMenus();
 
-		this._menuElement.querySelectorAll('.wes-context-menu-item__has-submenu').forEach((e) => {
-			const subMenu = this._menuItemElement_subMenu_mapp.get(e);
-			subMenu.hide();
-		});
-		
-		this._menuElement.remove();
+		this.menuElement.remove();
 		this._menuElement = null;
+	}
+
+	_hideSubMenus() {
+		this._queryMenuItemElements().forEach((element) => {
+			const subMenu = this._menuItemElement_subMenuPanel_mapp.get(element);
+			if (subMenu) {
+				subMenu.hide();
+			}
+		});
+	}
+
+	_queryMenuItemElements() {
+		return this.menuElement.querySelectorAll(`.${constants.menuItemClass}`);
 	}
 
 	_createMenuElement(menuPanel) {
@@ -57,21 +95,15 @@ export default class MenuPanel {
 		Object.assign(pannelOptions, menuPanel);
 
 		const menuElement = document.createElement('div');
-		menuElement.classList.add('wes-context-menu-panel');
+		menuElement.classList.add(constants.menuPanelClass);
 
 		for (const menuItem of pannelOptions.menuItems) {
 			if (menuItem) {
-				menuElement.appendChild(this._createMenuItemElement(menuItem));
+				let menuItemElement = this._createMenuItemElement(menuItem);
+				menuElement.appendChild(menuItemElement);
+				this._menuItemElement_menuItem_mapp.set(menuItemElement, menuItem);
 			}
 		}
-
-		menuElement.addEventListener('mouseenter', (e) => {
-			// todo: hide all sub menu and show correct sub menu
-		});
-		menuElement.addEventListener('click', (e) => {
-			// todo: menu item click event
-		});
-
 		return menuElement;
 	}
 
@@ -79,6 +111,8 @@ export default class MenuPanel {
 		if (!menuItem) {
 			return null;
 		}
+
+		const itemElement = document.createElement('div');
 
 		if (menuItem === constants.separator) {
 			itemElement.classList = 'wes-context-menu-separator';
@@ -95,8 +129,9 @@ export default class MenuPanel {
 		};
 		Object.assign(menuItemOptions, menuItem);
 
-		const itemElement = document.createElement('div');
-		itemElement.classList.add('wes-context-menu-item');
+		itemElement.addEventListener('mouseenter', this._menuItemMouseEnter);
+
+		itemElement.classList.add(constants.menuItemClass);
 
 		const textElement = document.createElement('span');
 		textElement.classList = 'wes-context-menu-text';
@@ -107,50 +142,28 @@ export default class MenuPanel {
 		// 	textElement.style.cssText = 'color:'+menuItem.textColor;
 		// }
 
-		if (menuItem.subText) {
-			const subTextElement = document.createElement('span');
-			subTextElement.classList = 'wes-context-menu-subtext';
-			subTextElement.innerText = menuItem.subText;
-			itemElement.appendChild(subTextElement);
-		}
+		const subTextElement = document.createElement('span');
+		subTextElement.classList = 'wes-context-menu-subtext';
+		subTextElement.innerText = menuItem.subText ? menuItem.subText : '';
+		itemElement.appendChild(subTextElement);
 
 		if (menuItem.disabled) {
 			itemElement.classList.add('wes-context-menu-item__disabled');
 			return itemElement;
 		}
 
-		if (!menuItem.hasOwnProperty('subMenu')) {
-			// todo: delegate event handler to panel
-			if (menuItem.onclick && typeof menuItem.onclick === 'function') {
-				itemElement.addEventListener('click', (e) => {
-					const context = {
-						data: data,
-					};
+		if (menuItem.hasOwnProperty('subMenu')) {
+			subTextElement.innerText += ' ❯';
+			itemElement.classList.add('wes-context-menu-item__has-submenu');
 
-					data.onclick(context);
-					e.stopPropagation();
-				});
-			}
+			const subMenu = new MenuPanel(menuItem.subMenu);
 
+			this._menuItemElement_subMenuPanel_mapp.set(itemElement, subMenu);
 			return itemElement;
 		}
 
-		// has submenu
-		textElement.innerText += ' ❯';
+		itemElement.addEventListener('click', this._menuItemClick);
 
-		itemElement.classList.add('wes-context-menu-item__has-submenu');
-
-		this._menuItemElement_subMenu_mapp.set(itemElement, new MenuPanel(menuItem.subMenu));
-
-		// todo: delegate event handler to panel
-		itemElement.addEventListener('mouseenter', (e) => {
-			const subMenu = this._menuItemElement_subMenu_mapp.get(itemElement);
-
-			const x = this._menuElement.offsetLeft + this._menuElement.offsetWidth;
-			const y = this._menuElement.offsetTop + itemElement.offsetTop;
-
-			subMenu.render(x, y, itemElement);
-		});
 		return itemElement;
 	}
 }
