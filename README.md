@@ -2,4 +2,4 @@
 
 ### TODO:
 - CSS
-- fix bug: the MenuPanel will broken if there isn't enough space on it's right. 
+- fix bug: the SubMenu will cover Menu if there isn't enough space on it's right. 
