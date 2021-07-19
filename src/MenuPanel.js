@@ -65,6 +65,15 @@ export default class MenuPanel {
 		this.menuElement.style.left = `${x}px`;
 		this.menuElement.style.top = `${y}px`;
 		container.appendChild(this.menuElement);
+
+		const rect = this.menuElement.getBoundingClientRect();
+		
+		if (rect.right > window.screen.width) {
+			this.menuElement.remove();
+			this.menuElement.style.left = `${x - rect.width}px`;
+			this.menuElement.style.top = `${y}px`;
+			container.appendChild(this.menuElement);
+		}
 	}
 
 	hide() {

@@ -9,13 +9,9 @@ const contextMenuManager = {
 	register(targetElement, menu) {
 		const menuPanel = new MenuPanel(menu);
 		this.element_menu_map.set(targetElement, menuPanel);
-
-		window.addEventListener('contextmenu', this._oncontextmenu.bind(this));
-		window.addEventListener('click', this._onclick.bind(this));
 	},
+
 	unregister(targetElement) {
-		window.removeEventListener('contextmenu', this._oncontextmenu.bind(this));
-		window.removeEventListener('click', this._onclick.bind(this));
 		this.element_menu_map.delete(targetElement);
 	},
 
@@ -38,5 +34,9 @@ const contextMenuManager = {
 		});
 	},
 };
+
+
+window.addEventListener('contextmenu', contextMenuManager._oncontextmenu.bind(contextMenuManager));
+window.addEventListener('click', contextMenuManager._onclick.bind(contextMenuManager));
 
 export default contextMenuManager;

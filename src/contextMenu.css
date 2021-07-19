@@ -10,10 +10,14 @@
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	width: fit-content;
+	padding-top: 4px;
+	padding-bottom: 4px;
 }
 
 .wes-context-menu-item {
 	cursor: default;
+	padding: 4px;
 }
 
 .wes-context-menu-item:hover {
@@ -37,4 +41,5 @@
 .wes-context-menu-subtext {
 	color: red;
 	float: right;
+	vertical-align:middle;
 }
