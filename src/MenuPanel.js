@@ -8,13 +8,16 @@ export default class MenuPanel {
 
 		Object.assign(defaultSettings, settings);
 
-		this._menuItemElement_menuItem_mapp = new WeakMap();
-		this._menuItemElement_subMenuPanel_mapp = new WeakMap();
+		this._menuElement = undefined;
+		this._menuItemElement_menuItem_map = new WeakMap();
+		this._menuItemElement_subMenuPanel_map = new WeakMap();
 		this._menuItems = settings.menuItems;
+
+		this._renderDirection = constants.renderDirection.left;
 
 		this._menuItemClick = (e) => {
 			let itemElement = e.currentTarget;
-			const menuItem = this._menuItemElement_menuItem_mapp.get(itemElement);
+			const menuItem = this._menuItemElement_menuItem_map.get(itemElement);
 			if (menuItem) {
 				if (menuItem.disabled) {
 					e.stopPropagation();
@@ -40,12 +43,18 @@ export default class MenuPanel {
 			// hide all sub menu and show correct sub menu
 			this._hideSubMenus();
 			let itemElement = e.target;
-			const subMenu = this._menuItemElement_subMenuPanel_mapp.get(itemElement);
+			const subMenu = this._menuItemElement_subMenuPanel_map.get(itemElement);
 			if (subMenu) {
 				const x = this.menuElement.offsetLeft + this.menuElement.offsetWidth;
 				const y = this.menuElement.offsetTop + itemElement.offsetTop;
 
-				subMenu.render(x, y, itemElement);
+				const renderResult = subMenu.render(x, y, itemElement);
+
+				if (renderResult.renderDirection === constants.renderDirection.right || this._renderDirection === constants.renderDirection.right) {
+					const rect = subMenu.menuElement.getBoundingClientRect();
+					const newX = this.menuElement.offsetLeft - rect.width;
+					subMenu.render(newX, y, itemElement);
+				}
 			}
 		};
 	}
@@ -66,14 +75,21 @@ export default class MenuPanel {
 		this.menuElement.style.top = `${y}px`;
 		container.appendChild(this.menuElement);
 
+		this._renderDirection = constants.renderDirection.left;
+
 		const rect = this.menuElement.getBoundingClientRect();
-		
 		if (rect.right > window.screen.width) {
 			this.menuElement.remove();
 			this.menuElement.style.left = `${x - rect.width}px`;
 			this.menuElement.style.top = `${y}px`;
 			container.appendChild(this.menuElement);
+
+			this._renderDirection = constants.renderDirection.right;
 		}
+
+		return {
+			renderDirection: this._renderDirection,
+		};
 	}
 
 	hide() {
@@ -85,7 +101,7 @@ export default class MenuPanel {
 
 	_hideSubMenus() {
 		this._queryMenuItemElements().forEach((element) => {
-			const subMenu = this._menuItemElement_subMenuPanel_mapp.get(element);
+			const subMenu = this._menuItemElement_subMenuPanel_map.get(element);
 			if (subMenu) {
 				subMenu.hide();
 			}
@@ -110,7 +126,7 @@ export default class MenuPanel {
 			if (menuItem) {
 				let menuItemElement = this._createMenuItemElement(menuItem);
 				menuElement.appendChild(menuItemElement);
-				this._menuItemElement_menuItem_mapp.set(menuItemElement, menuItem);
+				this._menuItemElement_menuItem_map.set(menuItemElement, menuItem);
 			}
 		}
 		return menuElement;
@@ -167,7 +183,7 @@ export default class MenuPanel {
 
 			const subMenu = new MenuPanel(menuItem.subMenu);
 
-			this._menuItemElement_subMenuPanel_mapp.set(itemElement, subMenu);
+			this._menuItemElement_subMenuPanel_map.set(itemElement, subMenu);
 			return itemElement;
 		}
 
