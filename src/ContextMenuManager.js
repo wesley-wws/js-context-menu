@@ -16,7 +16,7 @@ const contextMenuManager = {
 	},
 
 	_oncontextmenu(e) {
-        for (let element of e.path) {
+        for (let element of e.composedPath()) {
             const menuPanel = this.element_menu_map.get(element);
             if (menuPanel) {
                 e.preventDefault();
@@ -26,7 +26,7 @@ const contextMenuManager = {
         }
 	},
 	_onclick(e) {
-		e.path.forEach(element => {
+		e.composedPath().forEach(element => {
 			const menuPanel = this.element_menu_map.get(element);
 			if (menuPanel) {
 				menuPanel.hide();
